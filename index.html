@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Publishing Split Sheet Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Music Publishing Split Sheet Calculator</h1>
+            <p class="subtitle">Professional Distribution & Royalty Management</p>
+        </header>
+
+        <main>
+            <!-- Song Information Section -->
+            <section class="section song-info">
+                <h2>Song Information</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="songTitle">Song Title *</label>
+                        <input type="text" id="songTitle" placeholder="Enter song title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="artists">Artists/Performers *</label>
+                        <input type="text" id="artists" placeholder="e.g., Artist 1, Artist 2" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="isrc">ISRC Code</label>
+                        <input type="text" id="isrc" placeholder="e.g., US-ABC-24-00001">
+                    </div>
+                    <div class="form-group">
+                        <label for="releaseDate">Release Date</label>
+                        <input type="date" id="releaseDate">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Split Contributors Section -->
+            <section class="section contributors">
+                <div class="section-header">
+                    <h2>Contributors & Splits</h2>
+                    <button class="btn-secondary" id="addContributorBtn">+ Add Contributor</button>
+                </div>
+                
+                <div id="contributorsList" class="contributors-list">
+                    <!-- Contributors will be added here dynamically -->
+                </div>
+
+                <div class="default-contributors">
+                    <p class="info-text">No contributors added yet. Click "Add Contributor" to get started.</p>
+                </div>
+            </section>
+
+            <!-- Split Distribution -->
+            <section class="section split-distribution">
+                <h2>Split Distribution</h2>
+                <div class="split-categories">
+                    <div class="split-category">
+                        <h3>Publishing (PRO)</h3>
+                        <div class="category-splits" id="publishingSplits">
+                            <!-- Publishing splits will be listed here -->
+                        </div>
+                        <div class="category-total">
+                            <span>Publishing Total:</span>
+                            <span id="publishingTotal" class="percentage">0%</span>
+                        </div>
+                    </div>
+
+                    <div class="split-category">
+                        <h3>Writer/Composer</h3>
+                        <div class="category-splits" id="writerSplits">
+                            <!-- Writer splits will be listed here -->
+                        </div>
+                        <div class="category-total">
+                            <span>Writer Total:</span>
+                            <span id="writerTotal" class="percentage">0%</span>
+                        </div>
+                    </div>
+
+                    <div class="split-category">
+                        <h3>Producer/Recording</h3>
+                        <div class="category-splits" id="producerSplits">
+                            <!-- Producer splits will be listed here -->
+                        </div>
+                        <div class="category-total">
+                            <span>Producer Total:</span>
+                            <span id="producerTotal" class="percentage">0%</span>
+                        </div>
+                    </div>
+
+                    <div class="split-category">
+                        <h3>Featured Artist</h3>
+                        <div class="category-splits" id="artistSplits">
+                            <!-- Artist splits will be listed here -->
+                        </div>
+                        <div class="category-total">
+                            <span>Artist Total:</span>
+                            <span id="artistTotal" class="percentage">0%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grand-total">
+                    <span>Grand Total:</span>
+                    <span id="grandTotal" class="percentage">0%</span>
+                </div>
+
+                <div id="totalWarning" class="warning-message" style="display: none;">
+                    ⚠️ Total splits do not equal 100%
+                </div>
+            </section>
+
+            <!-- Revenue Projection Section -->
+            <section class="section revenue-projection">
+                <h2>Revenue Projection</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="projectedRevenue">Projected Monthly Revenue ($) *</label>
+                        <input type="number" id="projectedRevenue" placeholder="0.00" min="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="currency">Currency</label>
+                        <select id="currency">
+                            <option value="USD">USD ($)</option>
+                            <option value="EUR">EUR (€)</option>
+                            <option value="GBP">GBP (£)</option>
+                            <option value="CAD">CAD (C$)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="projections-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Contributor</th>
+                                <th>Role</th>
+                                <th>Split %</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="projectionsBody">
+                            <!-- Projections will be calculated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Actions Section -->
+            <section class="section actions">
+                <button class="btn-primary" id="generatePdfBtn">📄 Generate PDF Report</button>
+                <button class="btn-secondary" id="downloadJsonBtn">💾 Download Split Sheet (JSON)</button>
+                <button class="btn-secondary" id="resetFormBtn">🔄 Reset Form</button>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2024 Music Publishing Split Sheet Calculator | Professional Distribution Management Tool</p>
+        </footer>
+    </div>
+
+    <!-- Contributor Modal -->
+    <div id="contributorModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Add Contributor</h2>
+            <form id="contributorForm">
+                <div class="form-group">
+                    <label for="contributorName">Contributor Name *</label>
+                    <input type="text" id="contributorName" placeholder="Full name" required>
+                </div>
+                <div class="form-group">
+                    <label for="contributorRole">Role *</label>
+                    <select id="contributorRole" required>
+                        <option value="">Select a role</option>
+                        <option value="Publisher">Publisher (PRO)</option>
+                        <option value="Composer">Composer/Writer</option>
+                        <option value="Lyricist">Lyricist</option>
+                        <option value="Producer">Producer</option>
+                        <option value="Engineer">Engineer/Mixer</option>
+                        <option value="Featured Artist">Featured Artist</option>
+                        <option value="Band Member">Band Member</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="contributorSplit">Split Percentage *</label>
+                    <input type="number" id="contributorSplit" placeholder="0.00" min="0" max="100" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="contributorEmail">Email</label>
+                    <input type="email" id="contributorEmail" placeholder="contributor@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="contributorPro">PRO Affiliation</label>
+                    <select id="contributorPro">
+                        <option value="">None</option>
+                        <option value="ASCAP">ASCAP</option>
+                        <option value="BMI">BMI</option>
+                        <option value="SESAC">SESAC</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="modal-buttons">
+                    <button type="submit" class="btn-primary">Add Contributor</button>
+                    <button type="button" class="btn-secondary cancel-btn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
