@@ -1,622 +1,854 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Music Split Sheet Calculator</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-            color: #1a1a1a;
-            font-family: 'Inter', sans-serif;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            overflow: hidden;
-        }
-
-        header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px 30px;
-            text-align: center;
-        }
-
-        header h1 {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        header p {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-
-        main {
-            padding: 40px;
-        }
-
-        .section {
-            margin-bottom: 40px;
-        }
-
-        .section h2 {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: #1a1a1a;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 16px;
-        }
-
-        .form-row.full {
-            grid-template-columns: 1fr;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-group label {
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #333;
-        }
-
-        .form-group input,
-        .form-group select {
-            padding: 10px 12px;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 14px;
-            font-family: 'Inter', sans-serif;
-            transition: all 0.2s;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .btn-secondary {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 10px 16px;
-            background: #f0f0f0;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            color: #667eea;
-        }
-
-        .btn-secondary:hover {
-            background: #e8e8e8;
-            border-color: #d0d0d0;
-        }
-
-        /* Contributors List */
-        .contributors-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .contributor-card {
-            background: #f8f9fa;
-            border: 1px solid #e8e8e8;
-            border-radius: 12px;
-            padding: 16px;
-            display: flex;
-            gap: 16px;
-            align-items: center;
-            transition: all 0.2s;
-        }
-
-        .contributor-card:hover {
-            border-color: #667eea;
-            background: #ffffff;
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
-        }
-
-        .contributor-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 14px;
-            flex-shrink: 0;
-        }
-
-        .contributor-info {
-            flex: 1;
-        }
-
-        .contributor-name {
-            font-weight: 600;
-            font-size: 14px;
-            margin-bottom: 4px;
-        }
-
-        .contributor-role {
-            font-size: 12px;
-            color: #666;
-        }
-
-        .contributor-split {
-            text-align: right;
-            min-width: 80px;
-        }
-
-        .contributor-split-value {
-            font-size: 24px;
-            font-weight: 700;
-            color: #667eea;
-        }
-
-        .contributor-split-label {
-            font-size: 11px;
-            color: #999;
-        }
-
-        .remove-btn {
-            background: none;
-            border: none;
-            color: #999;
-            cursor: pointer;
-            font-size: 18px;
-            padding: 4px 8px;
-            border-radius: 6px;
-            transition: all 0.2s;
-        }
-
-        .remove-btn:hover {
-            color: #e74c3c;
-            background: rgba(231, 76, 60, 0.1);
-        }
-
-        /* Split Distribution */
-        .split-distribution {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 24px;
-        }
-
-        .split-bar {
-            width: 100%;
-            height: 32px;
-            background: #e8e8e8;
-            border-radius: 8px;
-            overflow: hidden;
-            display: flex;
-            margin-bottom: 16px;
-        }
-
-        .split-segment {
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: 600;
-            color: white;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .legend {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 12px;
-        }
-
-        .legend-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-        }
-
-        .grand-total {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 0;
-            border-top: 2px solid #e0e0e0;
-            margin-top: 16px;
-        }
-
-        .grand-total span:first-child {
-            font-weight: 600;
-        }
-
-        .grand-total span:last-child {
-            font-size: 24px;
-            font-weight: 700;
-            color: #667eea;
-        }
-
-        .warning-message {
-            background: #fff3cd;
-            border: 1px solid #ffc107;
-            color: #856404;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 13px;
-            margin-top: 12px;
-        }
-
-        /* Revenue Projection */
-        .projections-table {
-            overflow-x: auto;
-            margin-top: 16px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-        }
-
-        th {
-            background: #f0f0f0;
-            padding: 12px;
-            text-align: left;
-            font-weight: 600;
-            border-bottom: 2px solid #e0e0e0;
-        }
-
-        td {
-            padding: 12px;
-            border-bottom: 1px solid #e8e8e8;
-        }
-
-        tr:last-child td {
-            border-bottom: none;
-        }
-
-        /* Action Buttons */
-        .actions {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 12px;
-        }
-
-        .btn-primary {
-            padding: 12px 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-        }
-
-        /* Default State */
-        .default-contributors {
-            text-align: center;
-            padding: 40px 20px;
-            color: #999;
-        }
-
-        .info-text {
-            font-size: 14px;
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            animation: fadeIn 0.3s;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .modal-content {
-            background-color: white;
-            margin: 5% auto;
-            padding: 30px;
-            border-radius: 16px;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            animation: slideUp 0.3s;
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(30px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .modal-content h2 {
-            margin-bottom: 24px;
-            font-size: 20px;
-            font-weight: 700;
-        }
-
-        .close {
-            color: #999;
-            float: right;
-            font-size: 24px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: color 0.2s;
-            line-height: 1;
-        }
-
-        .close:hover {
-            color: #1a1a1a;
-        }
-
-        .modal-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-top: 24px;
-        }
-
-        .cancel-btn {
-            padding: 10px 16px;
-            background: #f0f0f0;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-
-        .cancel-btn:hover {
-            background: #e8e8e8;
-        }
-
-        footer {
-            background: #f8f9fa;
-            padding: 20px;
-            text-align: center;
-            font-size: 12px;
-            color: #999;
-            border-top: 1px solid #e0e0e0;
-        }
-
-        /* Responsive */
-        @media (max-width: 600px) {
-            main {
-                padding: 20px;
-            }
-
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-
-            .actions {
-                grid-template-columns: 1fr;
-            }
-
-            .contributor-card {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .contributor-split {
-                text-align: center;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SplitSheet — Music Publishing Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --surface2: #1c1c28;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --text: #f0f0f5;
+    --muted: #7a7a9a;
+    --sw: #a78bfa;
+    --sw-dim: rgba(167,139,250,0.12);
+    --sw-bright: #c4b5fd;
+    --pr: #34d399;
+    --pr-dim: rgba(52,211,153,0.12);
+    --pr-bright: #6ee7b7;
+    --gold: #fbbf24;
+    --gold-dim: rgba(251,191,36,0.12);
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* noise overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 20px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* HEADER */
+  header {
+    padding: 36px 0 28px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+  }
+
+  .logo-mark {
+    width: 42px; height: 42px;
+    background: linear-gradient(135deg, var(--sw), var(--pr));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+
+  header p {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .song-input-wrap {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .song-input-wrap label {
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  input[type="text"] {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 7px 12px;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 160px;
+  }
+
+  input[type="text"]:focus { border-color: var(--sw); }
+
+  /* PRINCIPLE BAR */
+  .principle {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+
+  .p-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .p-track {
+    flex: 1;
+    height: 8px;
+    background: var(--surface2);
+    border-radius: 99px;
+    overflow: hidden;
+    display: flex;
+  }
+
+  .p-sw { background: var(--sw); height: 100%; transition: width 0.4s cubic-bezier(.4,0,.2,1); border-radius: 99px 0 0 99px; }
+  .p-pr { background: var(--pr); height: 100%; transition: width 0.4s cubic-bezier(.4,0,.2,1); border-radius: 0 99px 99px 0; }
+
+  .p-val {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    min-width: 34px;
+    text-align: center;
+  }
+
+  /* SPLIT BAR */
+  .split-bar-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin-bottom: 24px;
+  }
+
+  .split-bar-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .split-bar {
+    height: 28px;
+    background: var(--surface2);
+    border-radius: 99px;
+    overflow: hidden;
+    display: flex;
+    margin-bottom: 10px;
+  }
+
+  .split-seg {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: width 0.4s cubic-bezier(.4,0,.2,1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .split-seg-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(0,0,0,0.7);
+    white-space: nowrap;
+    overflow: hidden;
+    padding: 0 6px;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .ldot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* CONTRIBUTORS */
+  .contrib-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .contrib-header h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .btn-add {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--sw-dim);
+    border: 1px solid var(--sw);
+    border-radius: var(--radius-sm);
+    color: var(--sw-bright);
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-add:hover { background: rgba(167,139,250,0.22); }
+
+  /* CONTRIBUTOR CARD */
+  .contrib-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin-bottom: 12px;
+    transition: border-color 0.2s;
+    animation: slideIn 0.25s ease;
+  }
+
+  .contrib-card:hover { border-color: var(--border2); }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .contrib-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+
+  .cname {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    background: transparent;
+    border: none;
+    border-bottom: 1px dashed var(--border2);
+    color: var(--text);
+    width: 150px;
+    padding: 2px 4px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .cname:focus { border-bottom-color: var(--sw); }
+
+  .role-sel {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    padding: 3px 10px;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .role-sel:focus { border-color: var(--sw); }
+
+  .contrib-pct {
+    margin-left: auto;
+    text-align: right;
+  }
+
+  .pct-big {
+    font-family: 'Syne', sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1;
+    transition: color 0.3s;
+  }
+
+  .pct-sub {
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .remove-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 18px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: all 0.15s;
+    line-height: 1;
+  }
+
+  .remove-btn:hover { color: #f87171; background: rgba(248,113,113,0.1); }
+
+  /* MINI PROGRESS */
+  .contrib-bar {
+    height: 4px;
+    background: var(--surface2);
+    border-radius: 99px;
+    overflow: hidden;
+    margin-bottom: 14px;
+  }
+
+  .contrib-bar-fill {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 0.35s cubic-bezier(.4,0,.2,1);
+  }
+
+  /* SECTION LABEL */
+  .sec-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin: 12px 0 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .sec-label span {
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: 99px;
+    font-size: 9px;
+  }
+
+  /* TASK BUTTONS */
+  .task-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+  }
+
+  .task-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 10px;
+    cursor: pointer;
+    text-align: left;
+    font-family: 'DM Sans', sans-serif;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    transition: all 0.15s;
+    position: relative;
+  }
+
+  .task-btn:hover { border-color: var(--border2); background: rgba(255,255,255,0.04); }
+
+  .task-btn.on-sw {
+    background: var(--sw-dim);
+    border-color: var(--sw);
+  }
+
+  .task-btn.on-pr {
+    background: var(--pr-dim);
+    border-color: var(--pr);
+  }
+
+  .task-btn.on-co {
+    background: var(--gold-dim);
+    border-color: var(--gold);
+  }
+
+  .task-ico {
+    font-size: 16px;
+    line-height: 1;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .task-name {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.35;
+  }
+
+  .task-pts {
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 1px;
+  }
+
+  .task-check {
+    position: absolute;
+    top: 6px;
+    right: 7px;
+    font-size: 11px;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  .task-btn.on-sw .task-check,
+  .task-btn.on-pr .task-check,
+  .task-btn.on-co .task-check { opacity: 1; }
+
+  .task-btn.on-sw .task-pts { color: var(--sw); }
+  .task-btn.on-pr .task-pts { color: var(--pr); }
+  .task-btn.on-co .task-pts { color: var(--gold); }
+
+  /* CO SECTION */
+  .co-divider {
+    border-top: 1px dashed var(--border);
+    margin: 10px 0 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .co-divider span {
+    font-size: 10px;
+    color: var(--gold);
+    font-weight: 500;
+    white-space: nowrap;
+    background: var(--surface);
+    padding: 0 6px;
+    margin-top: -1px;
+  }
+
+  /* TAGS on logged users */
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 8px;
+    border-radius: 99px;
+    font-size: 10px;
+    font-weight: 500;
+    margin: 2px;
+  }
+
+  /* EMPTY STATE */
+  .empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted);
+    font-size: 14px;
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 12px;
+  }
+
+  .empty-icon { font-size: 32px; margin-bottom: 8px; }
+
+  /* FOOTER INFO */
+  .info-bar {
+    display: flex;
+    gap: 10px;
+    margin-top: 4px;
+    flex-wrap: wrap;
+  }
+
+  .info-chip {
+    font-size: 10px;
+    color: var(--muted);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    padding: 3px 10px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 560px) {
+    .task-grid { grid-template-columns: 1fr; }
+    .song-input-wrap { display: none; }
+    .pct-big { font-size: 26px; }
+  }
+</style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🎵 Split Sheet Calculator</h1>
-            <p>Simple & Clear Music Publishing Distribution</p>
-        </header>
+<div class="wrap">
 
-        <main>
-            <!-- Song Information Section -->
-            <section class="section song-info">
-                <h2>📝 Song Information</h2>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="songTitle">Song Title</label>
-                        <input type="text" id="songTitle" placeholder="Enter song title">
-                    </div>
-                    <div class="form-group">
-                        <label for="artists">Artists/Performers</label>
-                        <input type="text" id="artists" placeholder="e.g., Artist 1, Artist 2">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="releaseDate">Release Date</label>
-                        <input type="date" id="releaseDate">
-                    </div>
-                </div>
-            </section>
-
-            <!-- Split Contributors Section -->
-            <section class="section contributors">
-                <div class="section-header">
-                    <h2>👥 Contributors</h2>
-                    <button class="btn-secondary" id="addContributorBtn">+ Add Contributor</button>
-                </div>
-                
-                <div id="contributorsList" class="contributors-list">
-                    <!-- Contributors will be added here dynamically -->
-                </div>
-
-                <div class="default-contributors">
-                    <p class="info-text">No contributors added yet.</p>
-                </div>
-            </section>
-
-            <!-- Split Distribution -->
-            <section class="section">
-                <h2>📊 Split Overview</h2>
-                <div class="split-distribution">
-                    <div class="split-bar" id="splitBar">
-                        <div style="width: 100%; display: flex; align-items: center; justify-content: center; background: #e8e8e8; color: #999; font-size: 13px;">
-                            Add contributors to see splits
-                        </div>
-                    </div>
-                    <div class="legend" id="legend"></div>
-                    <div class="grand-total">
-                        <span>Total:</span>
-                        <span id="grandTotal">0%</span>
-                    </div>
-                    <div id="totalWarning" class="warning-message" style="display: none;">
-                        ⚠️ Total splits do not equal 100%
-                    </div>
-                </div>
-            </section>
-
-            <!-- Revenue Projection Section -->
-            <section class="section revenue-projection">
-                <h2>💰 Revenue Projection</h2>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="projectedRevenue">Monthly Revenue ($)</label>
-                        <input type="number" id="projectedRevenue" placeholder="0.00" min="0" step="0.01">
-                    </div>
-                    <div class="form-group">
-                        <label for="currency">Currency</label>
-                        <select id="currency">
-                            <option value="USD">USD ($)</option>
-                            <option value="EUR">EUR (€)</option>
-                            <option value="GBP">GBP (£)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="projections-table">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Contributor</th>
-                                <th>Role</th>
-                                <th>Split %</th>
-                                <th>Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody id="projectionsBody">
-                            <!-- Projections will be calculated here -->
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- Actions Section -->
-            <section class="section actions">
-                <button class="btn-primary" id="generatePdfBtn">📄 Export PDF</button>
-                <button class="btn-primary" id="downloadJsonBtn">💾 Download JSON</button>
-                <button class="btn-primary" id="resetFormBtn">🔄 Reset</button>
-            </section>
-        </main>
-
-        <footer>
-            <p>&copy; 2024 Music Split Sheet Calculator</p>
-        </footer>
+  <header>
+    <div class="logo-mark">🎵</div>
+    <div>
+      <h1>SplitSheet</h1>
+      <p>Music publishing split calculator</p>
     </div>
+    <div class="song-input-wrap">
+      <label>Song</label>
+      <input type="text" id="songName" placeholder="Track name..." value="Untitled Track">
+    </div>
+  </header>
 
-    <!-- Contributor Modal -->
-    <div id="contributorModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Add Contributor</h2>
-            <form id="contributorForm">
-                <div class="form-group">
-                    <label for="contributorName">Full Name</label>
-                    <input type="text" id="contributorName" placeholder="Full name" required>
-                </div>
-                <div class="form-group">
-                    <label for="contributorRole">Role</label>
-                    <select id="contributorRole" required>
-                        <option value="">Select a role</option>
-                        <option value="Songwriter">Songwriter</option>
-                        <option value="Producer">Producer</option>
-                        <option value="Composer">Composer</option>
-                        <option value="Engineer">Engineer</option>
-                        <option value="Vocalist">Vocalist</option>
-                        <option value="Instrumentalist">Instrumentalist</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="contributorSplit">Split Percentage (%)</label>
-                    <input type="number" id="contributorSplit" placeholder="0.00" min="0" max="100" step="0.01" required>
-                </div>
-                <div class="form-group">
-                    <label for="contributorEmail">Email (Optional)</label>
-                    <input type="email" id="contributorEmail" placeholder="email@example.com">
-                </div>
-                <div class="modal-buttons">
-                    <button type="button" class="cancel-btn">Cancel</button>
-                    <button type="submit" class="btn-primary">Add Contributor</button>
-                </div>
-            </form>
+  <!-- 50/50 Principle -->
+  <div class="principle">
+    <span class="p-label" style="color:var(--sw)">SW <span id="swPct">—</span></span>
+    <div class="p-track">
+      <div class="p-sw" id="pSwBar" style="width:50%"></div>
+      <div class="p-pr" id="pPrBar" style="width:50%"></div>
+    </div>
+    <span class="p-label" style="color:var(--pr)"><span id="prPct">—</span> PR</span>
+    <div class="info-bar" style="margin:0 0 0 10px">
+      <span class="info-chip" style="color:var(--sw)">● Songwriter pool 50%</span>
+      <span class="info-chip" style="color:var(--pr)">● Producer pool 50%</span>
+    </div>
+  </div>
+
+  <!-- Split Bar -->
+  <div class="split-bar-wrap">
+    <div class="split-bar-title">Final split</div>
+    <div class="split-bar" id="splitBar">
+      <div style="width:100%;background:var(--surface2);height:100%;border-radius:99px;display:flex;align-items:center;justify-content:center">
+        <span style="font-size:11px;color:var(--muted)">Add contributors below</span>
+      </div>
+    </div>
+    <div class="legend" id="legend"></div>
+  </div>
+
+  <!-- Contributors -->
+  <div class="contrib-header">
+    <h2>Contributors</h2>
+    <button class="btn-add" onclick="addContrib()">+ Add person</button>
+  </div>
+
+  <div id="contribList"></div>
+
+</div>
+
+<script>
+const ROLES = [
+  {id:'songwriter',      label:'Songwriter',         side:'sw'},
+  {id:'producer',        label:'Producer',            side:'pr'},
+  {id:'vocalist',        label:'Vocalist',            side:'sw'},
+  {id:'instrumentalist', label:'Instrumentalist',     side:'pr'},
+  {id:'beatmaker',       label:'Beat Maker',          side:'pr'},
+  {id:'poet',            label:'Poet / Lyricist',     side:'sw'},
+  {id:'cowriter',        label:'Co-Writer',           side:'sw'},
+  {id:'arranger',        label:'Arranger',            side:'pr'},
+  {id:'co_producer',     label:'Co-Producer',         side:'pr'},
+  {id:'creative_dir',    label:'Creative Director',   side:'sw'},
+];
+
+const TASKS = [
+  // Songwriting SW
+  {id:'lyrics',      label:'Wrote the lyrics',             desc:'Full or main lyric writing',                pts:25, side:'sw', ico:'✍️', co:false},
+  {id:'topline',     label:'Wrote the vocal melody',       desc:'The melody the singer follows',             pts:25, side:'sw', ico:'🎵', co:false},
+  {id:'hook',        label:'Created the hook / chorus',    desc:'The main chorus or catchphrase',            pts:20, side:'sw', ico:'🪝', co:false},
+  {id:'verse_mel',   label:'Wrote verse melodies',         desc:'Melody over the verses',                    pts:15, side:'sw', ico:'🎶', co:false},
+  {id:'chords',      label:'Created chord progression',    desc:'The harmonic base of the song',             pts:20, side:'sw', ico:'🎹', co:false},
+  {id:'backup_vox',  label:'Sang backup / harmonies',      desc:'Backing vocals in the track',               pts:5,  side:'sw', ico:'🎤', co:false},
+  {id:'adlib',       label:'Ad-lib that made the cut',     desc:'An improvised moment used in the track',    pts:8,  side:'sw', ico:'🌟', co:false},
+  // Co-Songwriting
+  {id:'co_lyrics',   label:'Co-wrote lyrics (partial)',    desc:'Lines, phrase, or a key word used',         pts:10, side:'sw', ico:'📝', co:true},
+  {id:'co_hook',     label:'Proposed the hook idea',       desc:'e.g. suggested using a popular sample',     pts:10, side:'sw', ico:'💡', co:true},
+  {id:'title_line',  label:'Gave the title / key line',   desc:'Title line is publishing gold',             pts:8,  side:'sw', ico:'🏷️', co:true},
+  {id:'line_fix',    label:'Changed a line that hit',      desc:'Critical lyric adjustment used',            pts:6,  side:'sw', ico:'✏️', co:true},
+  {id:'mel_dir',     label:'Directed the melody',          desc:'Guided or proposed how melody should go',   pts:10, side:'sw', ico:'🗣️', co:true},
+  {id:'chorus_dir',  label:'Directed the chorus creation', desc:'Producer guiding a songwriter',             pts:8,  side:'sw', ico:'🎯', co:true},
+  // Production PR
+  {id:'beat',        label:'Built the beat',               desc:'Full drum & rhythm production',             pts:20, side:'pr', ico:'🥁', co:false},
+  {id:'instr_mel',   label:'Played an instrument',         desc:'Guitar, piano, keyboard, flute, etc.',      pts:18, side:'pr', ico:'🎸', co:false},
+  {id:'bassline',    label:'Created the bassline',         desc:'The bass melody / movement',                pts:15, side:'pr', ico:'🎚️', co:false},
+  {id:'arrangement', label:'Arranged the full track',      desc:'Decided which parts go where',              pts:12, side:'pr', ico:'🗂️', co:false},
+  {id:'sound_des',   label:'Created a signature sound',   desc:'A key sonic element that defines the track',pts:8,  side:'pr', ico:'🔊', co:false},
+  // Co-Production
+  {id:'sample_idea', label:'Proposed a sample used',       desc:'Loop or sample idea adopted',               pts:10, side:'pr', ico:'📀', co:true},
+  {id:'co_beat',     label:'Co-produced a beat element',   desc:'Added drum/sample idea used',               pts:8,  side:'pr', ico:'🎧', co:true},
+  {id:'co_instr',    label:'Added a supporting part',      desc:'Extra instrument layer in the track',       pts:8,  side:'pr', ico:'🎺', co:true},
+  {id:'co_bass',     label:'Suggested bassline idea',      desc:'Bass movement idea adopted',                pts:6,  side:'pr', ico:'🎵', co:true},
+  {id:'struct_chg',  label:'Restructured the song',        desc:'Reworked sections (moved chorus, etc.)',    pts:8,  side:'pr', ico:'🔄', co:true},
+];
+
+const PALETTE = [
+  ['#a78bfa','rgba(167,139,250,0.18)'],
+  ['#34d399','rgba(52,211,153,0.18)'],
+  ['#f97316','rgba(249,115,22,0.18)'],
+  ['#38bdf8','rgba(56,189,248,0.18)'],
+  ['#fb7185','rgba(251,113,133,0.18)'],
+  ['#a3e635','rgba(163,230,53,0.18)'],
+  ['#e879f9','rgba(232,121,249,0.18)'],
+  ['#facc15','rgba(250,204,21,0.18)'],
+];
+
+let contribs = [];
+let cid = 0;
+
+function initials(n){
+  return n.trim().split(' ').map(w=>w[0]||'').join('').toUpperCase().slice(0,2)||'?';
+}
+
+function getRole(id){ return ROLES.find(r=>r.id===id)||ROLES[0]; }
+
+function getSide(c){ return getRole(c.roleId).side; }
+
+function getPoints(c){
+  return [...c.tasks].reduce((s,tid)=>{
+    const t=TASKS.find(x=>x.id===tid); return s+(t?t.pts:0);
+  },0);
+}
+
+function getSideTotal(side){
+  return contribs.filter(c=>getSide(c)===side).reduce((s,c)=>s+getPoints(c),0);
+}
+
+function getFinalPct(c){
+  const side=getSide(c);
+  const myPts=getPoints(c);
+  const sideTotal=getSideTotal(side);
+  if(sideTotal===0) return 0;
+  const hasSW=getSideTotal('sw')>0;
+  const hasPR=getSideTotal('pr')>0;
+  const sideShare=(hasSW&&hasPR)?50:(hasSW||hasPR)?100:0;
+  return Math.round(myPts/sideTotal*sideShare*10)/10;
+}
+
+function addContrib(){
+  const idx=contribs.length;
+  const pal=PALETTE[idx%PALETTE.length];
+  contribs.push({
+    id:++cid,
+    name:'Contributor '+(idx+1),
+    roleId: idx%2===0?'songwriter':'producer',
+    tasks: new Set(),
+    color: pal[0],
+    colorBg: pal[1],
+  });
+  renderAll();
+  setTimeout(()=>{
+    const inputs=document.querySelectorAll('.cname');
+    if(inputs.length) inputs[inputs.length-1].select();
+  },50);
+}
+
+function removeContrib(id){
+  contribs=contribs.filter(c=>c.id!==id);
+  renderAll();
+}
+
+function toggleTask(cid,tid){
+  const c=contribs.find(c=>c.id===cid);
+  if(!c) return;
+  if(c.tasks.has(tid)) c.tasks.delete(tid);
+  else c.tasks.add(tid);
+  renderAll();
+}
+
+function updateName(id,v){
+  const c=contribs.find(c=>c.id===id); if(c) c.name=v||'?';
+  renderSummary();
+}
+
+function updateRole(id,v){
+  const c=contribs.find(c=>c.id===id); if(c) c.roleId=v;
+  renderAll();
+}
+
+function renderAll(){
+  renderContribs();
+  renderSummary();
+}
+
+function renderSummary(){
+  const hasSW=getSideTotal('sw')>0;
+  const hasPR=getSideTotal('pr')>0;
+  const total=contribs.reduce((s,c)=>s+getPoints(c),0);
+
+  // principle bar
+  document.getElementById('swPct').textContent=(hasSW&&hasPR)?'50%':hasSW?'100%':'—';
+  document.getElementById('prPct').textContent=(hasSW&&hasPR)?'50%':hasPR?'100%':'—';
+  document.getElementById('pSwBar').style.width=(hasSW&&hasPR)?'50%':hasSW?'100%':'0%';
+  document.getElementById('pPrBar').style.width=(hasSW&&hasPR)?'50%':hasPR?'100%':'0%';
+
+  // split bar
+  const bar=document.getElementById('splitBar');
+  const leg=document.getElementById('legend');
+  bar.innerHTML=''; leg.innerHTML='';
+
+  if(total===0||contribs.length===0){
+    bar.innerHTML='<div style="width:100%;background:var(--surface2);height:100%;border-radius:99px;display:flex;align-items:center;justify-content:center"><span style="font-size:11px;color:var(--muted)">Tick contributions below</span></div>';
+    return;
+  }
+
+  contribs.forEach(c=>{
+    const pct=getFinalPct(c);
+    if(pct<=0) return;
+    const seg=document.createElement('div');
+    seg.className='split-seg';
+    seg.style.width=pct+'%';
+    seg.style.background=c.color;
+    if(pct>7) seg.innerHTML=`<span class="split-seg-label">${c.name.split(' ')[0]}</span>`;
+    bar.appendChild(seg);
+    leg.innerHTML+=`<div class="legend-item"><div class="ldot" style="background:${c.color}"></div>${c.name.split(' ')[0]} <strong>${pct}%</strong></div>`;
+  });
+
+  // update pct displays
+  contribs.forEach(c=>{
+    const el=document.getElementById('pct-'+c.id);
+    if(el) el.textContent=getFinalPct(c)+'%';
+  });
+}
+
+function renderContribs(){
+  const list=document.getElementById('contribList');
+  list.innerHTML='';
+
+  if(contribs.length===0){
+    list.innerHTML=`<div class="empty"><div class="empty-icon">🎶</div>No contributors yet.<br>Hit <strong>+ Add person</strong> to start logging.</div>`;
+    renderSummary();
+    return;
+  }
+
+  contribs.forEach(c=>{
+    const role=getRole(c.roleId);
+    const pts=getPoints(c);
+    const pct=getFinalPct(c);
+    const sideColor=role.side==='sw'?'var(--sw)':'var(--pr)';
+    const sideName=role.side==='sw'?'Songwriter side':'Producer side';
+
+    const card=document.createElement('div');
+    card.className='contrib-card';
+
+    const rolesOpts=ROLES.map(r=>`<option value="${r.id}"${r.id===c.roleId?' selected':''}>${r.label}</option>`).join('');
+
+    const swTasks=TASKS.filter(t=>t.side==='sw'&&!t.co);
+    const prTasks=TASKS.filter(t=>t.side==='pr'&&!t.co);
+    const swCoTasks=TASKS.filter(t=>t.side==='sw'&&t.co);
+    const prCoTasks=TASKS.filter(t=>t.side==='pr'&&t.co);
+
+    function taskBtnHtml(t){
+      const on=c.tasks.has(t.id);
+      const cls=on?(t.co?'on-co':(t.side==='sw'?'on-sw':'on-pr')):'';
+      return `<button class="task-btn ${cls}" onclick="toggleTask(${c.id},'${t.id}')">
+        <span class="task-ico">${t.ico}</span>
+        <div>
+          <div class="task-name">${t.label}</div>
+          <div class="task-pts">+${t.pts} pts · ${t.desc}</div>
         </div>
-    </div>
+        <span class="task-check">✓</span>
+      </button>`;
+    }
 
-    <script src="script.js"></script>
+    card.innerHTML=`
+      <div class="contrib-top">
+        <div class="avatar" style="background:${c.colorBg};color:${c.color}">${initials(c.name)}</div>
+        <div>
+          <input class="cname" value="${c.name}" onchange="updateName(${c.id},this.value)" onblur="updateName(${c.id},this.value)"/>
+          <div style="display:flex;align-items:center;gap:6px;margin-top:5px">
+            <select class="role-sel" onchange="updateRole(${c.id},this.value)">${rolesOpts}</select>
+            <span style="font-size:10px;color:${sideColor};font-weight:500">${sideName}</span>
+          </div>
+        </div>
+        <div class="contrib-pct">
+          <div class="pct-big" id="pct-${c.id}" style="color:${c.color}">${pct}%</div>
+          <div class="pct-sub">${pts} pts · final share</div>
+        </div>
+        <button class="remove-btn" onclick="removeContrib(${c.id})" title="Remove">✕</button>
+      </div>
+
+      <div class="contrib-bar">
+        <div class="contrib-bar-fill" style="width:${Math.min(pct*2,100)}%;background:${c.color}"></div>
+      </div>
+
+      <div class="sec-label" style="color:var(--sw)">
+        Songwriting
+        <span style="background:var(--sw-dim);color:var(--sw-bright)">SW side</span>
+      </div>
+      <div class="task-grid">${swTasks.map(taskBtnHtml).join('')}</div>
+
+      <div class="co-divider"><span>✦ Co-writer / creative reservations (SW)</span></div>
+      <div class="task-grid">${swCoTasks.map(taskBtnHtml).join('')}</div>
+
+      <div class="sec-label" style="color:var(--pr);margin-top:12px">
+        Production & Instruments
+        <span style="background:var(--pr-dim);color:var(--pr-bright)">PR side</span>
+      </div>
+      <div class="task-grid">${prTasks.map(taskBtnHtml).join('')}</div>
+
+      <div class="co-divider"><span>✦ Co-producer / instrument reservations (PR)</span></div>
+      <div class="task-grid">${prCoTasks.map(taskBtnHtml).join('')}</div>
+    `;
+
+    list.appendChild(card);
+  });
+
+  renderSummary();
+}
+
+// init
+addContrib();
+addContrib();
+</script>
 </body>
 </html>
