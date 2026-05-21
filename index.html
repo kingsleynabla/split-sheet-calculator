@@ -3,35 +3,491 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Music Publishing Split Sheet Calculator</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Music Split Sheet Calculator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            color: #1a1a1a;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        main {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-row.full {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 10px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-secondary {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 16px;
+            background: #f0f0f0;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #e8e8e8;
+            border-color: #d0d0d0;
+        }
+
+        /* Contributors List */
+        .contributors-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .contributor-card {
+            background: #f8f9fa;
+            border: 1px solid #e8e8e8;
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .contributor-card:hover {
+            border-color: #667eea;
+            background: #ffffff;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+        }
+
+        .contributor-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .contributor-info {
+            flex: 1;
+        }
+
+        .contributor-name {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .contributor-role {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .contributor-split {
+            text-align: right;
+            min-width: 80px;
+        }
+
+        .contributor-split-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .contributor-split-label {
+            font-size: 11px;
+            color: #999;
+        }
+
+        .remove-btn {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .remove-btn:hover {
+            color: #e74c3c;
+            background: rgba(231, 76, 60, 0.1);
+        }
+
+        /* Split Distribution */
+        .split-distribution {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .split-bar {
+            width: 100%;
+            height: 32px;
+            background: #e8e8e8;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            margin-bottom: 16px;
+        }
+
+        .split-segment {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .grand-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-top: 2px solid #e0e0e0;
+            margin-top: 16px;
+        }
+
+        .grand-total span:first-child {
+            font-weight: 600;
+        }
+
+        .grand-total span:last-child {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .warning-message {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-top: 12px;
+        }
+
+        /* Revenue Projection */
+        .projections-table {
+            overflow-x: auto;
+            margin-top: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            background: #f0f0f0;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Action Buttons */
+        .actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+        }
+
+        .btn-primary {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Default State */
+        .default-contributors {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .info-text {
+            font-size: 14px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            animation: slideUp 0.3s;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-content h2 {
+            margin-bottom: 24px;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .close {
+            color: #999;
+            float: right;
+            font-size: 24px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: color 0.2s;
+            line-height: 1;
+        }
+
+        .close:hover {
+            color: #1a1a1a;
+        }
+
+        .modal-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .cancel-btn {
+            padding: 10px 16px;
+            background: #f0f0f0;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .cancel-btn:hover {
+            background: #e8e8e8;
+        }
+
+        footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            main {
+                padding: 20px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .actions {
+                grid-template-columns: 1fr;
+            }
+
+            .contributor-card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .contributor-split {
+                text-align: center;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Music Publishing Split Sheet Calculator</h1>
-            <p class="subtitle">Professional Distribution & Royalty Management</p>
+            <h1>🎵 Split Sheet Calculator</h1>
+            <p>Simple & Clear Music Publishing Distribution</p>
         </header>
 
         <main>
             <!-- Song Information Section -->
             <section class="section song-info">
-                <h2>Song Information</h2>
+                <h2>📝 Song Information</h2>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="songTitle">Song Title *</label>
-                        <input type="text" id="songTitle" placeholder="Enter song title" required>
+                        <label for="songTitle">Song Title</label>
+                        <input type="text" id="songTitle" placeholder="Enter song title">
                     </div>
                     <div class="form-group">
-                        <label for="artists">Artists/Performers *</label>
-                        <input type="text" id="artists" placeholder="e.g., Artist 1, Artist 2" required>
+                        <label for="artists">Artists/Performers</label>
+                        <input type="text" id="artists" placeholder="e.g., Artist 1, Artist 2">
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label for="isrc">ISRC Code</label>
-                        <input type="text" id="isrc" placeholder="e.g., US-ABC-24-00001">
-                    </div>
                     <div class="form-group">
                         <label for="releaseDate">Release Date</label>
                         <input type="date" id="releaseDate">
@@ -42,7 +498,7 @@
             <!-- Split Contributors Section -->
             <section class="section contributors">
                 <div class="section-header">
-                    <h2>Contributors & Splits</h2>
+                    <h2>👥 Contributors</h2>
                     <button class="btn-secondary" id="addContributorBtn">+ Add Contributor</button>
                 </div>
                 
@@ -51,75 +507,36 @@
                 </div>
 
                 <div class="default-contributors">
-                    <p class="info-text">No contributors added yet. Click "Add Contributor" to get started.</p>
+                    <p class="info-text">No contributors added yet.</p>
                 </div>
             </section>
 
             <!-- Split Distribution -->
-            <section class="section split-distribution">
-                <h2>Split Distribution</h2>
-                <div class="split-categories">
-                    <div class="split-category">
-                        <h3>Publishing (PRO)</h3>
-                        <div class="category-splits" id="publishingSplits">
-                            <!-- Publishing splits will be listed here -->
-                        </div>
-                        <div class="category-total">
-                            <span>Publishing Total:</span>
-                            <span id="publishingTotal" class="percentage">0%</span>
+            <section class="section">
+                <h2>📊 Split Overview</h2>
+                <div class="split-distribution">
+                    <div class="split-bar" id="splitBar">
+                        <div style="width: 100%; display: flex; align-items: center; justify-content: center; background: #e8e8e8; color: #999; font-size: 13px;">
+                            Add contributors to see splits
                         </div>
                     </div>
-
-                    <div class="split-category">
-                        <h3>Writer/Composer</h3>
-                        <div class="category-splits" id="writerSplits">
-                            <!-- Writer splits will be listed here -->
-                        </div>
-                        <div class="category-total">
-                            <span>Writer Total:</span>
-                            <span id="writerTotal" class="percentage">0%</span>
-                        </div>
+                    <div class="legend" id="legend"></div>
+                    <div class="grand-total">
+                        <span>Total:</span>
+                        <span id="grandTotal">0%</span>
                     </div>
-
-                    <div class="split-category">
-                        <h3>Producer/Recording</h3>
-                        <div class="category-splits" id="producerSplits">
-                            <!-- Producer splits will be listed here -->
-                        </div>
-                        <div class="category-total">
-                            <span>Producer Total:</span>
-                            <span id="producerTotal" class="percentage">0%</span>
-                        </div>
+                    <div id="totalWarning" class="warning-message" style="display: none;">
+                        ⚠️ Total splits do not equal 100%
                     </div>
-
-                    <div class="split-category">
-                        <h3>Featured Artist</h3>
-                        <div class="category-splits" id="artistSplits">
-                            <!-- Artist splits will be listed here -->
-                        </div>
-                        <div class="category-total">
-                            <span>Artist Total:</span>
-                            <span id="artistTotal" class="percentage">0%</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="grand-total">
-                    <span>Grand Total:</span>
-                    <span id="grandTotal" class="percentage">0%</span>
-                </div>
-
-                <div id="totalWarning" class="warning-message" style="display: none;">
-                    ⚠️ Total splits do not equal 100%
                 </div>
             </section>
 
             <!-- Revenue Projection Section -->
             <section class="section revenue-projection">
-                <h2>Revenue Projection</h2>
+                <h2>💰 Revenue Projection</h2>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="projectedRevenue">Projected Monthly Revenue ($) *</label>
+                        <label for="projectedRevenue">Monthly Revenue ($)</label>
                         <input type="number" id="projectedRevenue" placeholder="0.00" min="0" step="0.01">
                     </div>
                     <div class="form-group">
@@ -128,7 +545,6 @@
                             <option value="USD">USD ($)</option>
                             <option value="EUR">EUR (€)</option>
                             <option value="GBP">GBP (£)</option>
-                            <option value="CAD">CAD (C$)</option>
                         </select>
                     </div>
                 </div>
@@ -152,61 +568,50 @@
 
             <!-- Actions Section -->
             <section class="section actions">
-                <button class="btn-primary" id="generatePdfBtn">📄 Generate PDF Report</button>
-                <button class="btn-secondary" id="downloadJsonBtn">💾 Download Split Sheet (JSON)</button>
-                <button class="btn-secondary" id="resetFormBtn">🔄 Reset Form</button>
+                <button class="btn-primary" id="generatePdfBtn">📄 Export PDF</button>
+                <button class="btn-primary" id="downloadJsonBtn">💾 Download JSON</button>
+                <button class="btn-primary" id="resetFormBtn">🔄 Reset</button>
             </section>
         </main>
 
         <footer>
-            <p>&copy; 2024 Music Publishing Split Sheet Calculator | Professional Distribution Management Tool</p>
+            <p>&copy; 2024 Music Split Sheet Calculator</p>
         </footer>
     </div>
 
     <!-- Contributor Modal -->
-    <div id="contributorModal" class="modal" style="display: none;">
+    <div id="contributorModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
             <h2>Add Contributor</h2>
             <form id="contributorForm">
                 <div class="form-group">
-                    <label for="contributorName">Contributor Name *</label>
+                    <label for="contributorName">Full Name</label>
                     <input type="text" id="contributorName" placeholder="Full name" required>
                 </div>
                 <div class="form-group">
-                    <label for="contributorRole">Role *</label>
+                    <label for="contributorRole">Role</label>
                     <select id="contributorRole" required>
                         <option value="">Select a role</option>
-                        <option value="Publisher">Publisher (PRO)</option>
-                        <option value="Composer">Composer/Writer</option>
-                        <option value="Lyricist">Lyricist</option>
+                        <option value="Songwriter">Songwriter</option>
                         <option value="Producer">Producer</option>
-                        <option value="Engineer">Engineer/Mixer</option>
-                        <option value="Featured Artist">Featured Artist</option>
-                        <option value="Band Member">Band Member</option>
+                        <option value="Composer">Composer</option>
+                        <option value="Engineer">Engineer</option>
+                        <option value="Vocalist">Vocalist</option>
+                        <option value="Instrumentalist">Instrumentalist</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="contributorSplit">Split Percentage *</label>
+                    <label for="contributorSplit">Split Percentage (%)</label>
                     <input type="number" id="contributorSplit" placeholder="0.00" min="0" max="100" step="0.01" required>
                 </div>
                 <div class="form-group">
-                    <label for="contributorEmail">Email</label>
-                    <input type="email" id="contributorEmail" placeholder="contributor@example.com">
-                </div>
-                <div class="form-group">
-                    <label for="contributorPro">PRO Affiliation</label>
-                    <select id="contributorPro">
-                        <option value="">None</option>
-                        <option value="ASCAP">ASCAP</option>
-                        <option value="BMI">BMI</option>
-                        <option value="SESAC">SESAC</option>
-                        <option value="Other">Other</option>
-                    </select>
+                    <label for="contributorEmail">Email (Optional)</label>
+                    <input type="email" id="contributorEmail" placeholder="email@example.com">
                 </div>
                 <div class="modal-buttons">
+                    <button type="button" class="cancel-btn">Cancel</button>
                     <button type="submit" class="btn-primary">Add Contributor</button>
-                    <button type="button" class="btn-secondary cancel-btn">Cancel</button>
                 </div>
             </form>
         </div>
